@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment - Mental Health Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .hero-section {
+      position: relative;
+      padding: 4rem 2rem;
+      text-align: center;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: white;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.2;
+    }
+
+    .hero-section h1,
+    .hero-section p {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-section h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      animation: fadeInDown 1s ease;
+    }
+
+    .hero-section p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      animation: fadeInUp 1s ease;
+    }
+
+    .appointment-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .booking-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+      padding: 0 2rem;
+    }
+
+    .booking-steps::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 2px solid var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number {
+      background: var(--primary-color);
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.5);
+    }
+
+    .step-label {
+      color: #bbb;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-label {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .booking-section {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      display: none;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+    .booking-section.active {
+      display: block;
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .therapist-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .therapist-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .therapist-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-color);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .therapist-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .therapist-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .therapist-card.selected {
+      border-color: var(--primary-color);
+      background: rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .therapist-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .therapist-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary-color);
+      transition: all 0.3s ease;
+    }
+
+    .therapist-card:hover .therapist-image {
+      transform: scale(1.05);
+    }
+
+    .therapist-info h3 {
+      margin: 0;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .therapist-info p {
+      margin: 0.5rem 0;
+      color: #bbb;
+      font-size: 1rem;
+    }
+
+    .therapist-details {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .detail-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .detail-item i {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+    }
+
+    .appointment-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.8rem;
+      color: #bbb;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .time-slot {
+      padding: 0.8rem;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .time-slot:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .time-slot.selected {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.3);
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      gap: 1rem;
+    }
+
+    .nav-button {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .prev-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .next-button {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-button:active {
+      transform: translateY(0);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header i {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .appointment-details {
+      margin: 1.5rem 0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .detail-label {
+      color: #bbb;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .modal-actions button {
+      flex: 1;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .therapist-banner {
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .therapist-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .therapist-card:hover .therapist-banner img {
+      transform: scale(1.05);
+    }
+
+    .calendar-image {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+    }
+
+    .calendar-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .confirmation-image {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero-section {
+        padding: 3rem 1rem;
+      }
+
+      .therapist-banner {
+        height: 120px;
+      }
+
+      .confirmation-image {
+        width: 60px;
+        height: 60px;
+      }
+
+      .booking-steps {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .booking-steps::before {
+        display: none;
+      }
+
+      .step {
+        flex-direction: row;
+        gap: 1rem;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .nav-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero-section">
+      <div class="hero-image">
+        <img src="assets/therapy-hero.jpg" alt="Therapy Session">
+      </div>
+      <h1>Book Your Therapy Session</h1>
+      <p>Take the first step towards better mental health with our experienced therapists</p>
+    </div>
+
+    <div class="appointment-container">
+      <div class="booking-steps">
+        <div class="step active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="step-label">Choose Therapist</div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-number">2</div>
+          <div class="step-label">Select Time</div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-number">3</div>
+          <div class="step-label">Confirm Details</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Choose Therapist -->
+      <div class="booking-section active" id="step1">
+        <h2>Select Your Therapist</h2>
+        <div class="therapist-cards" id="therapist-list"></div>
+  <div class="team-logo">
+    <i class="fas fa-brain"></i>
+    <span class="team-logo-text">Mental Health Assistant</span>
+  </div>
+
+  <div class="hero-section">
+    <div class="hero-image">
+      <img src="assets/therapy-hero.jpg" alt="Therapy Session">
+    </div>
+    <h1>Book Your Therapy Session</h1>
+    <p>Take the first step towards better mental health with our experienced therapists</p>
+  </div>
+
+  <div class="appointment-container">
+    <div class="booking-steps">
+      <div class="step active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-label">Choose Therapist</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-label">Select Time</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-label">Confirm Details</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Choose Therapist -->
+    <div class="booking-section active" id="step1">
+      <h2>Select Your Therapist</h2>
+      <div class="therapist-cards" id="therapist-list"></div>
+      <div class="navigation-buttons">
+        <button class="nav-button prev-button" disabled>
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button class="nav-button next-button" onclick="nextStep(1)">
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Select Date & Time -->
+    <div class="booking-section" id="step2">
+      <h2>Choose Your Preferred Time</h2>
+      <div class="appointment-form">
+        <div class="form-group">
+          <label for="appointment-date">Select Date</label>
+          <input type="date" id="appointment-date" required>
+          <div class="calendar-image">
+            <img src="assets/calendar.jpg" alt="Calendar">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Available Time Slots</label>
+          <div class="time-slots" id="time-slots"></div>
+        </div>
+      </div>
+      <div class="navigation-buttons">
+        <button class="nav-button prev-button" onclick="prevStep(2)">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button class="nav-button next-button" onclick="nextStep(2)">
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Additional Details -->
+    <div class="booking-section" id="step3">
+      <h2>Session Details</h2>
+      <div class="appointment-form">
+        <div class="form-group">
+          <label for="session-type">Session Type</label>
+          <select id="session-type" required>
+            <option value="">Select session type</option>
+            <option value="video">Video Call</option>
+            <option value="audio">Audio Call</option>
+            <option value="chat">Chat Session</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="concerns">Primary Concerns</label>
+          <textarea id="concerns" placeholder="Briefly describe what you'd like to discuss..."></textarea>
+        </div>
+      </div>
+      <div class="navigation-buttons">
+        <button class="nav-button prev-button" onclick="prevStep(3)">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button class="nav-button next-button" onclick="nextStep(3)">
+          Review Booking <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4: Confirmation -->
+    <div class="booking-section" id="step4">
+      <h2>Review Your Booking</h2>
+      <div id="booking-summary"></div>
+      <div class="navigation-buttons">
+        <button class="nav-button prev-button" onclick="prevStep(4)">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button class="nav-button next-button" onclick="confirmBooking()">
+          Confirm Booking <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <img src="assets/confirmation-check.jpg" alt="Confirmation" class="confirmation-image">
+        <i class="fas fa-check-circle"></i>
+        <h2>Booking Confirmed!</h2>
+        <p>Your appointment has been successfully scheduled</p>
+      </div>
+      <div class="appointment-details" id="confirmationDetails"></div>
+      <div class="modal-actions">
+        <button class="nav-button prev-button" onclick="closeModal()">
+          Close
+        </button>
+        <button class="nav-button next-button" onclick="window.location.href='index.html'">
+          Back to Home
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let selectedTherapist = null;
+    let selectedDate = null;
+    let selectedTime = null;
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchTherapists();
+      setMinDate();
+      setupEventListeners();
+    });
+
+    function fetchTherapists() {
+      // Fetch therapists from API
+      fetch('http://localhost:5000/api/therapists')
+        .then(response => response.json())
+        .then(therapists => {
+          populateTherapists(therapists);
+        })
+        .catch(error => {
+          console.error('Error fetching therapists:', error);
+          // Use sample data as fallback
+          const sampleTherapists = [
+            {
+              _id: '1',
+              name: "Dr. Sarah Johnson",
+              specialization: "Anxiety & Depression",
+              experience: "15 years",
+              image: "https://randomuser.me/api/portraits/women/1.jpg",
+              availability: ["Monday", "Wednesday", "Friday"]
+            },
+            {
+              _id: '2',
+              name: "Dr. Michael Chen",
+              specialization: "Stress Management",
+              experience: "12 years",
+              image: "https://randomuser.me/api/portraits/men/2.jpg",
+              availability: ["Tuesday", "Thursday", "Saturday"]
+            },
+            {
+              _id: '3',
+              name: "Dr. Emily Rodriguez",
+              specialization: "Relationship Counseling",
+              experience: "10 years",
+              image: "https://randomuser.me/api/portraits/women/3.jpg",
+              availability: ["Monday", "Tuesday", "Thursday"]
+            }
+          ];
+          populateTherapists(sampleTherapists);
+        });
+    }
+
+    function populateTherapists(therapists) {
+      const therapistList = document.getElementById('therapist-list');
+      therapistList.innerHTML = therapists.map(therapist => `
+        <div class="therapist-card" onclick="selectTherapist('${therapist._id}', this)">
+          <div class="therapist-header">
+            <img src="${therapist.image}" alt="${therapist.name}" class="therapist-image">
+            <div class="therapist-info">
+              <h3>${therapist.name}</h3>
+              <p>${therapist.specialization}</p>
+            </div>
+          </div>
+          <div class="therapist-details">
+            <div class="detail-item">
+              <i class="fas fa-clock"></i>
+              <span>${therapist.experience} experience</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-calendar"></i>
+              <span>Available: ${therapist.availability.join(', ')}</span>
+            </div>
+          </div>
+          <div class="therapist-banner">
+            <img src="assets/therapist-banner.jpg" alt="Therapy Session">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectTherapist(id, element) {
+      selectedTherapist = id;
+      document.querySelectorAll('.therapist-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      element.classList.add('selected');
+    }
+
+    function setMinDate() {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('appointment-date').min = tomorrow.toISOString().split('T')[0];
+    }
+
+    function populateTimeSlots() {
+      const timeSlots = document.getElementById('time-slots');
+      timeSlots.innerHTML = '';
+      
+      // Generate time slots from 9 AM to 5 PM
+      for (let hour = 9; hour < 17; hour++) {
+        const time = `${hour.toString().padStart(2, '0')}:00`;
+        timeSlots.innerHTML += `
+          <div class="time-slot" onclick="selectTime(this, '${time}')">
+            ${time}
+          </div>
+        `;
+      }
+    }
+
+    function selectTime(element, time) {
+      selectedTime = time;
+      document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+      });
+      element.classList.add('selected');
+    }
+
+    function setupEventListeners() {
+      document.getElementById('appointment-date').addEventListener('change', (e) => {
+        selectedDate = e.target.value;
+        populateTimeSlots();
+      });
+    }
+
+    function updateSteps() {
+      document.querySelectorAll('.step').forEach((step, index) => {
+        if (index + 1 === currentStep) {
+          step.classList.add('active');
+        } else {
+          step.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('.booking-section').forEach((section, index) => {
+        if (index + 1 === currentStep) {
+          section.classList.add('active');
+        } else {
+          section.classList.remove('active');
+        }
+      });
+    }
+
+    function nextStep(step) {
+      if (validateStep(step)) {
+        currentStep++;
+        updateSteps();
+        if (currentStep === 4) {
+          showBookingSummary();
+        }
+      }
+    }
+
+    function prevStep(step) {
+      currentStep--;
+      updateSteps();
+    }
+
+    function validateStep(step) {
+      switch(step) {
+        case 1:
+          if (!selectedTherapist) {
+            alert('Please select a therapist');
+            return false;
+          }
+          break;
+        case 2:
+          if (!selectedDate || !selectedTime) {
+            alert('Please select both date and time');
+            return false;
+          }
+          break;
+        case 3:
+          const sessionType = document.getElementById('session-type').value;
+          if (!sessionType) {
+            alert('Please select a session type');
+            return false;
+          }
+          break;
+      }
+      return true;
+    }
+
+    function showBookingSummary() {
+      const summary = document.getElementById('booking-summary');
+      const therapistCard = document.querySelector('.therapist-card.selected');
+      const therapistName = therapistCard.querySelector('h3').textContent;
+      const sessionType = document.getElementById('session-type').value;
+      const concerns = document.getElementById('concerns').value;
+
+      summary.innerHTML = `
+        <div class="appointment-details">
+          <div class="detail-row">
+            <span class="detail-label">Therapist:</span>
+            <span>${therapistName}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Date:</span>
+            <span>${new Date(selectedDate).toLocaleDateString()}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time:</span>
+            <span>${selectedTime}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Session Type:</span>
+            <span>${sessionType}</span>
+          </div>
+          ${concerns ? `
+            <div class="detail-row">
+              <span class="detail-label">Concerns:</span>
+              <span>${concerns}</span>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function confirmBooking() {
+      const appointmentData = {
+        therapistId: selectedTherapist,
+        date: selectedDate,
+        time: selectedTime,
+        sessionType: document.getElementById('session-type').value,
+        concerns: document.getElementById('concerns').value
+      };
+
+      // Send booking to API
+      fetch('http://localhost:5000/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(appointmentData)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Booking failed');
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('confirmationDetails').innerHTML = document.getElementById('booking-summary').innerHTML;
+        document.getElementById('confirmationModal').style.display = 'flex';
+      })
+      .catch(error => {
+        console.error('Error booking appointment:', error);
+        alert('Failed to book appointment. Please try again later.');
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('confirmationModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html> 

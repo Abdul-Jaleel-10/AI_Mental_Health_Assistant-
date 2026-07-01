@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment - Mental Health Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .booking-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .booking-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .doctors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .doctor-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .doctor-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .doctor-card.selected {
+      border-color: var(--primary-color);
+      background: rgba(124, 77, 255, 0.1);
+    }
+
+    .doctor-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .doctor-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .doctor-details h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .doctor-specialty {
+      color: var(--primary-color);
+      font-size: 0.9rem;
+    }
+
+    .doctor-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffd700;
+    }
+
+    .doctor-experience {
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    .submit-btn {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(124, 77, 255, 0.3);
+    }
+
+    .message {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .success {
+      background: rgba(46, 204, 113, 0.2);
+      color: #2ecc71;
+    }
+
+    .error {
+      background: rgba(231, 76, 60, 0.2);
+      color: #e74c3c;
+    }
+
+    .form-group select {
+      padding: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      font-size: 1rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 20px;
+      padding-right: 35px;
+    }
+
+    /* Add styles for select options */
+    .form-group select option {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      padding: 10px;
+    }
+
+    /* Style for optgroups */
+    .form-group select optgroup {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-weight: bold;
+      padding: 5px;
+    }
+
+    /* Style for option hover state */
+    .form-group select option:hover {
+      background-color: #2a2a2a;
+    }
+
+    /* Style for selected option */
+    .form-group select option:checked {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .condition-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .condition-option {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .condition-option:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary-color);
+    }
+
+    .condition-option.selected {
+      background: rgba(124, 77, 255, 0.1);
+      border-color: var(--primary-color);
+    }
+
+    .condition-icon {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .location-input {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .location-input input {
+      flex: 1;
+    }
+
+    .location-input button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .location-input button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(124, 77, 255, 0.3);
+    }
+
+    .doctor-card {
+      position: relative;
+    }
+
+    .doctor-actions {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .doctor-actions button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .doctor-actions button:hover {
+      transform: translateY(-2px);
+    }
+
+    .success-details {
+      text-align: left;
+      padding: 1rem;
+    }
+    
+    .success-details h3 {
+      color: #2ecc71;
+      margin-bottom: 1rem;
+    }
+    
+    .appointment-details {
+      background: rgba(46, 204, 113, 0.1);
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+    
+    .appointment-details p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .appointment-details i {
+      color: #2ecc71;
+    }
+    
+    .note {
+      font-style: italic;
+      color: #666;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="team-logo">
+    <i class="fas fa-brain"></i>
+    <span class="team-logo-text">Mental Health Assistant</span>
+  </div>
+
+  <div class="booking-container">
+    <div class="booking-header">
+      <h1>Book Your Appointment</h1>
+      <p>Select your condition and preferred doctor to schedule an appointment</p>
+    </div>
+
+    <form class="booking-form" id="bookingForm">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Your Location</label>
+        <div class="location-input">
+          <select id="location" name="location" required>
+            <option value="">Select your city</option>
+            <optgroup label="South India">
+              <option value="Chennai">Chennai, Tamil Nadu</option>
+              <option value="Bangalore">Bangalore, Karnataka</option>
+              <option value="Hyderabad">Hyderabad, Telangana</option>
+              <option value="Kochi">Kochi, Kerala</option>
+              <option value="Coimbatore">Coimbatore, Tamil Nadu</option>
+              <option value="Madurai">Madurai, Tamil Nadu</option>
+              <option value="Vijayawada">Vijayawada, Andhra Pradesh</option>
+              <option value="Visakhapatnam">Visakhapatnam, Andhra Pradesh</option>
+            </optgroup>
+            <optgroup label="North India">
+              <option value="Delhi">Delhi</option>
+              <option value="Mumbai">Mumbai, Maharashtra</option>
+              <option value="Pune">Pune, Maharashtra</option>
+              <option value="Jaipur">Jaipur, Rajasthan</option>
+              <option value="Lucknow">Lucknow, Uttar Pradesh</option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Dehradun">Dehradun, Uttarakhand</option>
+              <option value="Amritsar">Amritsar, Punjab</option>
+            </optgroup>
+            <optgroup label="East India">
+              <option value="Kolkata">Kolkata, West Bengal</option>
+              <option value="Bhubaneswar">Bhubaneswar, Odisha</option>
+              <option value="Guwahati">Guwahati, Assam</option>
+              <option value="Patna">Patna, Bihar</option>
+              <option value="Ranchi">Ranchi, Jharkhand</option>
+              <option value="Siliguri">Siliguri, West Bengal</option>
+              <option value="Dibrugarh">Dibrugarh, Assam</option>
+            </optgroup>
+            <optgroup label="West India">
+              <option value="Ahmedabad">Ahmedabad, Gujarat</option>
+              <option value="Surat">Surat, Gujarat</option>
+              <option value="Indore">Indore, Madhya Pradesh</option>
+              <option value="Bhopal">Bhopal, Madhya Pradesh</option>
+              <option value="Nagpur">Nagpur, Maharashtra</option>
+              <option value="Vadodara">Vadodara, Gujarat</option>
+            </optgroup>
+          </select>
+          <button type="button" id="searchLocation">Search</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>What brings you here today?</label>
+        <div class="condition-options">
+          <div class="condition-option" data-value="anxiety">
+            <i class="fas fa-heart condition-icon"></i>
+            <span>Anxiety & Panic</span>
+          </div>
+          <div class="condition-option" data-value="depression">
+            <i class="fas fa-brain condition-icon"></i>
+            <span>Depression & Mood</span>
+          </div>
+          <div class="condition-option" data-value="stress">
+            <i class="fas fa-cloud condition-icon"></i>
+            <span>Stress Management</span>
+          </div>
+          <div class="condition-option" data-value="trauma">
+            <i class="fas fa-shield-alt condition-icon"></i>
+            <span>Trauma & PTSD</span>
+          </div>
+          <div class="condition-option" data-value="relationship">
+            <i class="fas fa-users condition-icon"></i>
+            <span>Relationship Issues</span>
+          </div>
+          <div class="condition-option" data-value="addiction">
+            <i class="fas fa-ban condition-icon"></i>
+            <span>Addiction Recovery</span>
+          </div>
+          <div class="condition-option" data-value="sleep">
+            <i class="fas fa-moon condition-icon"></i>
+            <span>Sleep Disorders</span>
+          </div>
+          <div class="condition-option" data-value="eating">
+            <i class="fas fa-utensils condition-icon"></i>
+            <span>Eating Disorders</span>
+          </div>
+          <div class="condition-option" data-value="ocd">
+            <i class="fas fa-sync condition-icon"></i>
+            <span>OCD & Phobias</span>
+          </div>
+          <div class="condition-option" data-value="grief">
+            <i class="fas fa-heart-broken condition-icon"></i>
+            <span>Grief & Loss</span>
+          </div>
+          <div class="condition-option" data-value="adhd">
+            <i class="fas fa-bolt condition-icon"></i>
+            <span>ADHD & Focus</span>
+          </div>
+          <div class="condition-option" data-value="self-esteem">
+            <i class="fas fa-star condition-icon"></i>
+            <span>Self-Esteem</span>
+          </div>
+        </div>
+        <input type="hidden" id="condition" name="condition" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Please describe your condition in detail</label>
+        <textarea id="description" name="description" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Available Doctors</label>
+        <div class="doctors-grid" id="doctorsGrid">
+          <!-- Doctors will be dynamically loaded here -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Preferred Date</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="time">Preferred Time</label>
+        <input type="time" id="time" name="time" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Book Appointment</button>
+      </form>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    // Enhanced doctors data with more local doctors
+    const doctors = {
+      anxiety: [
+        {
+          id: 1,
+          name: "Dr. Sarah Johnson",
+          specialty: "Anxiety Specialist",
+          experience: "10 years",
+          rating: 4.8,
+          image: "assets/doctor1.jpg",
+          description: "Specializes in cognitive behavioral therapy for anxiety disorders",
+          location: "Chennai",
+          website: "https://dr-sarah-johnson.com",
+          clinic: "MindCare Clinic, T. Nagar"
+        },
+        {
+          id: 2,
+          name: "Dr. Michael Chen",
+          specialty: "Anxiety & Stress",
+          experience: "8 years",
+          rating: 4.7,
+          image: "assets/doctor2.jpg",
+          description: "Expert in mindfulness-based stress reduction",
+          location: "Mumbai",
+          website: "https://dr-michael-chen.com",
+          clinic: "Peace of Mind Center, Bandra"
+        },
+        {
+          id: 9,
+          name: "Dr. Priya Sharma",
+          specialty: "Anxiety & Panic Disorders",
+          experience: "6 years",
+          rating: 4.6,
+          image: "assets/doctor9.jpg",
+          description: "Specializes in anxiety management and panic disorder treatment",
+          location: "Bangalore",
+          website: "https://dr-priya-sharma.com",
+          clinic: "Healing Minds Center, Koramangala"
+        },
+        {
+          id: 16,
+          name: "Dr. Ramesh Kumar",
+          specialty: "Anxiety & Stress Management",
+          experience: "9 years",
+          rating: 4.7,
+          image: "assets/doctor16.jpg",
+          description: "Expert in anxiety disorders and stress management",
+          location: "Hyderabad",
+          website: "https://dr-ramesh-kumar.com",
+          clinic: "Calm Mind Clinic, Jubilee Hills"
+        },
+        {
+          id: 17,
+          name: "Dr. Anjali Patel",
+          specialty: "Anxiety & Panic Disorders",
+          experience: "7 years",
+          rating: 4.8,
+          image: "assets/doctor17.jpg",
+          description: "Specializes in panic disorder treatment and anxiety management",
+          location: "Ahmedabad",
+          website: "https://dr-anjali-patel.com",
+          clinic: "Serenity Mental Health Center, Prahladnagar"
+        }
+      ],
+      depression: [
+        {
+          id: 3,
+          name: "Dr. Emily Wilson",
+          specialty: "Depression Specialist",
+          experience: "12 years",
+          rating: 4.9,
+          image: "assets/doctor3.jpg",
+          description: "Specializes in treating major depressive disorder",
+          location: "Delhi",
+          website: "https://dr-emily-wilson.com",
+          clinic: "Hope Wellness Center, Connaught Place"
+        },
+        {
+          id: 4,
+          name: "Dr. James Thompson",
+          specialty: "Depression & Mood",
+          experience: "15 years",
+          rating: 4.8,
+          image: "assets/doctor4.jpg",
+          description: "Expert in mood disorders and psychotherapy",
+          location: "Hyderabad",
+          website: "https://dr-james-thompson.com",
+          clinic: "Serenity Clinic, Banjara Hills"
+        },
+        {
+          id: 18,
+          name: "Dr. Arvind Singh",
+          specialty: "Depression & Mood Disorders",
+          experience: "11 years",
+          rating: 4.7,
+          image: "assets/doctor18.jpg",
+          description: "Expert in depression treatment and mood management",
+          location: "Kolkata",
+          website: "https://dr-arvind-singh.com",
+          clinic: "MindCare Center, Salt Lake"
+        },
+        {
+          id: 19,
+          name: "Dr. Meera Desai",
+          specialty: "Depression & Anxiety",
+          experience: "8 years",
+          rating: 4.6,
+          image: "assets/doctor19.jpg",
+          description: "Specializes in depression and anxiety disorders",
+          location: "Pune",
+          website: "https://dr-meera-desai.com",
+          clinic: "Healing Minds Clinic, Koregaon Park"
+        }
+      ],
+      stress: [
+        {
+          id: 5,
+          name: "Dr. Lisa Martinez",
+          specialty: "Stress Management",
+          experience: "7 years",
+          rating: 4.6,
+          image: "assets/doctor5.jpg",
+          description: "Specializes in stress reduction techniques",
+          location: "Pune",
+          website: "https://dr-lisa-martinez.com",
+          clinic: "Tranquility Center, Koregaon Park"
+        },
+        {
+          id: 20,
+          name: "Dr. Rajesh Verma",
+          specialty: "Stress & Anxiety Management",
+          experience: "9 years",
+          rating: 4.7,
+          image: "assets/doctor20.jpg",
+          description: "Expert in stress management and relaxation techniques",
+          location: "Bangalore",
+          website: "https://dr-rajesh-verma.com",
+          clinic: "Peace of Mind Center, Indiranagar"
+        }
+      ],
+      sleep: [
+        {
+          id: 10,
+          name: "Dr. Rajesh Kumar",
+          specialty: "Sleep Disorders",
+          experience: "9 years",
+          rating: 4.7,
+          image: "assets/doctor10.jpg",
+          description: "Expert in sleep disorders and insomnia treatment",
+          location: "Kolkata",
+          website: "https://dr-rajesh-kumar.com",
+          clinic: "SleepWell Center, Salt Lake"
+        },
+        {
+          id: 21,
+          name: "Dr. Priya Reddy",
+          specialty: "Sleep & Insomnia",
+          experience: "8 years",
+          rating: 4.8,
+          image: "assets/doctor21.jpg",
+          description: "Specializes in sleep disorders and insomnia treatment",
+          location: "Hyderabad",
+          website: "https://dr-priya-reddy.com",
+          clinic: "SleepCare Clinic, Banjara Hills"
+        }
+      ],
+      eating: [
+        {
+          id: 11,
+          name: "Dr. Ananya Patel",
+          specialty: "Eating Disorders",
+          experience: "8 years",
+          rating: 4.8,
+          image: "assets/doctor11.jpg",
+          description: "Specializes in eating disorder treatment and recovery",
+          location: "Ahmedabad",
+          website: "https://dr-ananya-patel.com",
+          clinic: "Nourish Wellness, Prahladnagar"
+        },
+        {
+          id: 22,
+          name: "Dr. Sneha Sharma",
+          specialty: "Eating Disorders & Nutrition",
+          experience: "7 years",
+          rating: 4.7,
+          image: "assets/doctor22.jpg",
+          description: "Expert in eating disorders and nutritional counseling",
+          location: "Mumbai",
+          website: "https://dr-sneha-sharma.com",
+          clinic: "Healthy Mind Center, Andheri"
+        }
+      ],
+      ocd: [
+        {
+          id: 12,
+          name: "Dr. Vikram Singh",
+          specialty: "OCD & Phobias",
+          experience: "11 years",
+          rating: 4.9,
+          image: "assets/doctor12.jpg",
+          description: "Expert in OCD treatment and exposure therapy",
+          location: "Jaipur",
+          website: "https://dr-vikram-singh.com",
+          clinic: "MindPeace Center, Vaishali Nagar"
+        },
+        {
+          id: 23,
+          name: "Dr. Neha Gupta",
+          specialty: "OCD & Anxiety Disorders",
+          experience: "9 years",
+          rating: 4.8,
+          image: "assets/doctor23.jpg",
+          description: "Specializes in OCD and anxiety disorder treatment",
+          location: "Delhi",
+          website: "https://dr-neha-gupta.com",
+          clinic: "MindCare Clinic, Saket"
+        }
+      ],
+      grief: [
+        {
+          id: 13,
+          name: "Dr. Meera Desai",
+          specialty: "Grief & Loss",
+          experience: "10 years",
+          rating: 4.7,
+          image: "assets/doctor13.jpg",
+          description: "Specializes in grief counseling and bereavement support",
+          location: "Kochi",
+          website: "https://dr-meera-desai.com",
+          clinic: "Healing Hearts Center, Marine Drive"
+        },
+        {
+          id: 24,
+          name: "Dr. Arjun Reddy",
+          specialty: "Grief & Trauma",
+          experience: "8 years",
+          rating: 4.6,
+          image: "assets/doctor24.jpg",
+          description: "Expert in grief counseling and trauma therapy",
+          location: "Bangalore",
+          website: "https://dr-arjun-reddy.com",
+          clinic: "Healing Minds Center, Koramangala"
+        }
+      ],
+      adhd: [
+        {
+          id: 14,
+          name: "Dr. Arjun Reddy",
+          specialty: "ADHD & Focus",
+          experience: "7 years",
+          rating: 4.6,
+          image: "assets/doctor14.jpg",
+          description: "Expert in ADHD management and focus improvement",
+          location: "Coimbatore",
+          website: "https://dr-arjun-reddy.com",
+          clinic: "Focus Mind Center, RS Puram"
+        },
+        {
+          id: 25,
+          name: "Dr. Priya Sharma",
+          specialty: "ADHD & Learning Disorders",
+          experience: "9 years",
+          rating: 4.7,
+          image: "assets/doctor25.jpg",
+          description: "Specializes in ADHD and learning disorder treatment",
+          location: "Mumbai",
+          website: "https://dr-priya-sharma.com",
+          clinic: "Focus Mind Center, Bandra"
+        }
+      ],
+      "self-esteem": [
+        {
+          id: 15,
+          name: "Dr. Neha Gupta",
+          specialty: "Self-Esteem & Confidence",
+          experience: "8 years",
+          rating: 4.8,
+          image: "assets/doctor15.jpg",
+          description: "Specializes in self-esteem building and confidence development",
+          location: "Lucknow",
+          website: "https://dr-neha-gupta.com",
+          clinic: "Empowerment Center, Gomti Nagar"
+        },
+        {
+          id: 26,
+          name: "Dr. Ravi Kumar",
+          specialty: "Self-Esteem & Personal Growth",
+          experience: "10 years",
+          rating: 4.9,
+          image: "assets/doctor26.jpg",
+          description: "Expert in self-esteem building and personal development",
+          location: "Chennai",
+          website: "https://dr-ravi-kumar.com",
+          clinic: "Growth Mindset Center, Adyar"
+        }
+      ]
+    };
+
+    // Function to create doctor cards with enhanced information
+    function createDoctorCard(doctor) {
+      return `
+        <div class="doctor-card" data-doctor-id="${doctor.id}">
+          <div class="doctor-info">
+            <img src="${doctor.image}" alt="${doctor.name}" class="doctor-avatar">
+            <div class="doctor-details">
+              <h3>${doctor.name}</h3>
+              <div class="doctor-specialty">${doctor.specialty}</div>
+              <div class="doctor-rating">
+                <i class="fas fa-star"></i>
+                <span>${doctor.rating}</span>
+              </div>
+              <div class="doctor-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${doctor.clinic}</span>
+              </div>
+            </div>
+          </div>
+          <div class="doctor-experience">${doctor.experience} experience</div>
+          <p>${doctor.description}</p>
+          <div class="doctor-actions">
+            <button onclick="window.open('${doctor.website}', '_blank')">Visit Website</button>
+            <button onclick="window.open('https://maps.google.com/?q=${doctor.clinic}', '_blank')">View Location</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Function to load doctors based on condition and location
+    function loadDoctors(condition, location) {
+      const doctorsGrid = document.getElementById('doctorsGrid');
+      doctorsGrid.innerHTML = '';
+      
+      if (doctors[condition]) {
+        const filteredDoctors = doctors[condition].filter(doctor => 
+          doctor.location.toLowerCase() === location.toLowerCase()
+        );
+        
+        if (filteredDoctors.length > 0) {
+          filteredDoctors.forEach(doctor => {
+            doctorsGrid.innerHTML += createDoctorCard(doctor);
+          });
+
+          // Add click event listeners to doctor cards
+          document.querySelectorAll('.doctor-card').forEach(card => {
+            card.addEventListener('click', () => {
+              document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+              card.classList.add('selected');
+            });
+          });
+        } else {
+          // Show nearby cities if no doctors found
+          const nearbyCities = getNearbyCities(location);
+          doctorsGrid.innerHTML = `
+            <div class="no-doctors">
+              <p>No doctors available in ${location} for this condition.</p>
+              <p>Would you like to search in nearby cities?</p>
+              <div class="nearby-cities">
+                ${nearbyCities.map(city => `
+                  <button onclick="searchInCity('${city}')">${city}</button>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        doctorsGrid.innerHTML = '<p>No doctors available for this condition. Please select another condition.</p>';
+      }
+    }
+
+    // Function to get nearby cities
+    function getNearbyCities(city) {
+      const nearbyCities = {
+        'Chennai': ['Bangalore', 'Hyderabad', 'Coimbatore', 'Madurai'],
+        'Mumbai': ['Pune', 'Surat', 'Ahmedabad'],
+        'Delhi': ['Gurgaon', 'Noida', 'Faridabad'],
+        'Bangalore': ['Chennai', 'Hyderabad', 'Coimbatore'],
+        'Hyderabad': ['Bangalore', 'Chennai', 'Vijayawada'],
+        'Kolkata': ['Bhubaneswar', 'Siliguri', 'Patna'],
+        'Pune': ['Mumbai', 'Nagpur', 'Ahmedabad'],
+        'Ahmedabad': ['Surat', 'Vadodara', 'Mumbai'],
+        'Jaipur': ['Delhi', 'Lucknow', 'Chandigarh'],
+        'Lucknow': ['Delhi', 'Kanpur', 'Allahabad']
+      };
+      return nearbyCities[city] || [];
+    }
+
+    // Function to search in a specific city
+    function searchInCity(city) {
+      document.getElementById('location').value = city;
+      const condition = document.getElementById('condition').value;
+      loadDoctors(condition, city);
+    }
+
+    // Event listener for location change
+    document.getElementById('location').addEventListener('change', () => {
+      const location = document.getElementById('location').value;
+      const condition = document.getElementById('condition').value;
+      
+      if (location && condition) {
+        loadDoctors(condition, location);
+      }
+    });
+
+    // Event listeners for condition options
+    document.querySelectorAll('.condition-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.condition-option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        document.getElementById('condition').value = option.dataset.value;
+        
+        const location = document.getElementById('location').value;
+        if (location) {
+          loadDoctors(option.dataset.value, location);
+        }
+      });
+    });
+
+    // Remove the search button click handler since we're using change events
+    document.getElementById('searchLocation').style.display = 'none';
+
+    // Form submission
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const selectedDoctor = document.querySelector('.doctor-card.selected');
+      if (!selectedDoctor) {
+        showMessage('Please select a doctor', 'error');
+        return;
+      }
+
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        location: document.getElementById('location').value,
+        condition: document.getElementById('condition').value,
+        description: document.getElementById('description').value,
+        doctorId: selectedDoctor.dataset.doctorId,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value
+      };
+
+      // Here you would typically send the data to your backend
+      console.log('Booking data:', formData);
+      
+      // Show detailed success message
+      const successMessage = `
+        <div class="success-details">
+          <h3>Appointment Booked Successfully!</h3>
+          <div class="appointment-details">
+            <p><i class="fas fa-check-circle"></i> Your appointment has been confirmed</p>
+            <p><i class="fas fa-envelope"></i> Confirmation details will be sent to ${formData.email}</p>
+            <p><i class="fas fa-calendar"></i> Date: ${formData.date}</p>
+            <p><i class="fas fa-clock"></i> Time: ${formData.time}</p>
+            <p><i class="fas fa-map-marker-alt"></i> Location: ${formData.location}</p>
+          </div>
+          <p class="note">Please check your email for further instructions and appointment details.</p>
+        </div>
+      `;
+      
+      showMessage(successMessage, 'success');
+      
+      // Reset form
+      document.getElementById('bookingForm').reset();
+      document.querySelectorAll('.doctor-card').forEach(card => card.classList.remove('selected'));
+      document.querySelectorAll('.condition-option').forEach(option => option.classList.remove('selected'));
+    });
+
+    // Function to show messages
+    function showMessage(content, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = content;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000); // Increased timeout to 5 seconds
+    }
+
+    // Add new styles for success message
+    const style = document.createElement('style');
+    style.textContent = `
+      .success-details {
+        text-align: left;
+        padding: 1rem;
+      }
+      
+      .success-details h3 {
+        color: #2ecc71;
+        margin-bottom: 1rem;
+      }
+      
+      .appointment-details {
+        background: rgba(46, 204, 113, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+      }
+      
+      .appointment-details p {
+        margin: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .appointment-details i {
+        color: #2ecc71;
+      }
+      
+      .note {
+        font-style: italic;
+        color: #666;
+        margin-top: 1rem;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

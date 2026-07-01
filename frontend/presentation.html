@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Mental Health Assistant - Presentation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1a237e;
+      --secondary-color: #283593;
+      --accent-color: #ffd700;
+      --text-color: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: var(--text-color);
+    }
+
+    .presentation {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .slide {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-title {
+      font-size: 3rem;
+      color: var(--accent-color);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .slide-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    .feature-description {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .tech-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .tech-icon {
+      font-size: 2rem;
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: var(--accent-color);
+    }
+
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 0;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-color);
+    }
+
+    .timeline-date {
+      color: var(--accent-color);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-content {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .navigation {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .nav-button:hover {
+      transform: scale(1.1);
+      background: var(--secondary-color);
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+    }
+
+    .stat-label {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .slide-title {
+        font-size: 2rem;
+      }
+
+      .feature-card {
+        padding: 1.5rem;
+      }
+
+      .tech-stack {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+    <!-- Slide 1: Title -->
+    <div class="slide active" id="slide1">
+      <h1 class="slide-title">AI Mental Health Assistant</h1>
+      <p style="text-align: center; font-size: 1.5rem; margin-top: 2rem;">
+        Revolutionizing Mental Health Support Through AI
+      </p>
+    </div>
+
+    <!-- Slide 2: Problem Statement -->
+    <div class="slide" id="slide2">
+      <h1 class="slide-title">The Challenge</h1>
+      <div class="slide-content">
+        <div class="feature-card">
+          <i class="fas fa-clock feature-icon"></i>
+          <h3 class="feature-title">Limited Access</h3>
+          <p class="feature-description">Traditional mental health support is often unavailable when needed most.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-dollar-sign feature-icon"></i>
+          <h3 class="feature-title">High Costs</h3>
+          <p class="feature-description">Professional therapy can be expensive and unaffordable for many.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-user-shield feature-icon"></i>
+          <h3 class="feature-title">Social Stigma</h3>
+          <p class="feature-description">Fear of judgment prevents many from seeking help.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Solution -->
+    <div class="slide" id="slide3">
+      <h1 class="slide-title">Our Solution</h1>
+      <div class="slide-content">
+        <div class="feature-card">
+          <i class="fas fa-robot feature-icon"></i>
+          <h3 class="feature-title">AI-Powered Support</h3>
+          <p class="feature-description">24/7 availability with empathetic AI responses.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-lock feature-icon"></i>
+          <h3 class="feature-title">Privacy First</h3>
+          <p class="feature-description">Secure, confidential interactions with end-to-end encryption.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-mobile-alt feature-icon"></i>
+          <h3 class="feature-title">Accessible Anywhere</h3>
+          <p class="feature-description">Available on all devices, anytime, anywhere.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Key Features -->
+    <div class="slide" id="slide4">
+      <h1 class="slide-title">Key Features</h1>
+      <div class="slide-content">
+        <div class="feature-card">
+          <i class="fas fa-comments feature-icon"></i>
+          <h3 class="feature-title">AI Chat Assistant</h3>
+          <p class="feature-description">Natural conversations with empathetic AI support.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-chart-line feature-icon"></i>
+          <h3 class="feature-title">Mood Tracking</h3>
+          <p class="feature-description">Monitor and analyze emotional patterns over time.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-microphone feature-icon"></i>
+          <h3 class="feature-title">Voice Assistant</h3>
+          <p class="feature-description">Voice-based interaction with emotional tone analysis.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-dna feature-icon"></i>
+          <h3 class="feature-title">Mood DNA</h3>
+          <p class="feature-description">Personal emotional blueprint and growth tracking.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Technical Stack -->
+    <div class="slide" id="slide5">
+      <h1 class="slide-title">Technical Architecture</h1>
+      <div class="tech-stack">
+        <div class="tech-item">
+          <i class="fab fa-html5 tech-icon"></i>
+          <h3>Frontend</h3>
+          <p>HTML5, CSS3, JavaScript</p>
+        </div>
+        <div class="tech-item">
+          <i class="fab fa-node-js tech-icon"></i>
+          <h3>Backend</h3>
+          <p>Node.js, Express</p>
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-database tech-icon"></i>
+          <h3>Database</h3>
+          <p>MongoDB</p>
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-brain tech-icon"></i>
+          <h3>AI/ML</h3>
+          <p>Natural Language Processing</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Impact -->
+    <div class="slide" id="slide6">
+      <h1 class="slide-title">Impact & Metrics</h1>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Availability</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Privacy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">90%</div>
+          <div class="stat-label">User Satisfaction</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">50%</div>
+          <div class="stat-label">Cost Reduction</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Future Roadmap -->
+    <div class="slide" id="slide7">
+      <h1 class="slide-title">Future Roadmap</h1>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">Phase 1</div>
+          <div class="timeline-content">
+            <h4>Enhanced AI Capabilities</h4>
+            <p>Improved natural language understanding and emotional analysis</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Phase 2</div>
+          <div class="timeline-content">
+            <h4>Integration with Healthcare Providers</h4>
+            <p>Seamless connection with professional mental health services</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Phase 3</div>
+          <div class="timeline-content">
+            <h4>Global Expansion</h4>
+            <p>Multi-language support and cultural adaptation</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Call to Action -->
+    <div class="slide" id="slide8">
+      <h1 class="slide-title">Join the Revolution</h1>
+      <div class="slide-content">
+        <div class="feature-card">
+          <i class="fas fa-handshake feature-icon"></i>
+          <h3 class="feature-title">Be Part of the Change</h3>
+          <p class="feature-description">Help us make mental health support accessible to everyone.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-lightbulb feature-icon"></i>
+          <h3 class="feature-title">Innovate With Us</h3>
+          <p class="feature-description">Contribute to the future of mental health technology.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-globe feature-icon"></i>
+          <h3 class="feature-title">Global Impact</h3>
+          <p class="feature-description">Together, we can change lives worldwide.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navigation">
+    <button class="nav-button" id="prevSlide">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <button class="nav-button" id="nextSlide">
+      <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(slide => {
+        slide.classList.remove('active');
+      });
+      document.getElementById(`slide${n}`).classList.add('active');
+    }
+
+    document.getElementById('nextSlide').addEventListener('click', () => {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    });
+
+    document.getElementById('prevSlide').addEventListener('click', () => {
+      if (currentSlide > 1) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+        currentSlide++;
+        showSlide(currentSlide);
+      } else if (e.key === 'ArrowLeft' && currentSlide > 1) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    });
+  </script>
+</body>
+</html> 

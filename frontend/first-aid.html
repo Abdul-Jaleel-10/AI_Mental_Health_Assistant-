@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distraction Games - Mental Health Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .games-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card h2 {
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+    }
+
+    .game-card p {
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+
+    .game-card button {
+      background: var(--accent-color);
+      color: var(--primary-color);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .game-card button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    /* Color Match Game */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+      perspective: 1000px;
+    }
+
+    .color-square {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      position: relative;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .color-square.selected {
+      transform: scale(1.1);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-color);
+    }
+
+    .color-square.matched {
+      visibility: hidden;
+      animation: matchAnimation 0.5s ease;
+    }
+
+    @keyframes matchAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* Tapping Pattern Game */
+    .tapping-pattern {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .tap-point {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tap-point:hover {
+      transform: scale(1.1);
+      border-color: var(--accent-color);
+    }
+
+    .tap-point.active {
+      background: var(--accent-color);
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .tap-point.correct {
+      background: #4CAF50;
+      animation: correctTap 0.5s ease;
+    }
+
+    .tap-point.wrong {
+      background: #f44336;
+      animation: wrongTap 0.5s ease;
+    }
+
+    @keyframes correctTap {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes wrongTap {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Memory Game */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .memory-card {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      background: var(--primary-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .memory-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .memory-card .front,
+    .memory-card .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .memory-card .front {
+      background: var(--primary-color);
+    }
+
+    .memory-card .back {
+      background: var(--accent-color);
+      transform: rotateY(180deg);
+    }
+
+    /* Progress and Score */
+    .progress-container {
+      margin: 1rem 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: var(--accent-color);
+      transition: width 0.3s ease;
+    }
+
+    .score {
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      margin: 0.5rem 0;
+    }
+
+    /* Success Message */
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 255, 0, 0.2);
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--card-bg);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .games-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+      }
+
+      .memory-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Distraction Games</h1>
+      <p>Engage your mind with these calming activities</p>
+    </header>
+
+    <main>
+      <div class="games-container">
+        <!-- Color Match Game -->
+        <div class="game-card">
+          <h2><i class="fas fa-palette"></i> Color Match</h2>
+          <p>Find and match pairs of colors to complete the game</p>
+          <div class="color-grid" id="colorGrid"></div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress" id="colorProgress"></div>
+            </div>
+            <div class="score" id="colorScore">Matches: 0/6</div>
+          </div>
+          <button onclick="startColorGame()">Start Game</button>
+        </div>
+
+        <!-- Tapping Pattern Game -->
+        <div class="game-card">
+          <h2><i class="fas fa-hand-point-up"></i> Pattern Memory</h2>
+          <p>Follow and repeat the sequence of taps</p>
+          <div class="tapping-pattern" id="tappingPattern">
+            <div class="tap-point">1</div>
+            <div class="tap-point">2</div>
+            <div class="tap-point">3</div>
+            <div class="tap-point">4</div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress" id="tapProgress"></div>
+            </div>
+            <div class="score" id="tapScore">Level: 1</div>
+          </div>
+          <button onclick="startTappingGame()">Start Game</button>
+        </div>
+
+        <!-- Memory Game -->
+        <div class="game-card">
+          <h2><i class="fas fa-brain"></i> Memory Cards</h2>
+          <p>Find matching pairs of cards</p>
+          <div class="memory-grid" id="memoryGrid"></div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress" id="memoryProgress"></div>
+            </div>
+            <div class="score" id="memoryScore">Pairs: 0/8</div>
+          </div>
+          <button onclick="startMemoryGame()">Start Game</button>
+        </div>
+      </div>
+    </main>
+
+    <div class="success-message" id="successMessage">
+      <i class="fas fa-check-circle"></i> Great job! Keep going!
+    </div>
+
+    <footer>
+      <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    // Color Match Game
+    let firstSelection = null;
+    let matchedPairs = 0;
+    const totalPairs = 6;
+    let isGameActive = false;
+
+    function startColorGame() {
+      const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+      const grid = document.getElementById('colorGrid');
+      const progress = document.getElementById('colorProgress');
+      const score = document.getElementById('colorScore');
+      
+      grid.innerHTML = '';
+      matchedPairs = 0;
+      isGameActive = true;
+      progress.style.width = '0%';
+      score.textContent = 'Matches: 0/6';
+      
+      const colorPairs = [...colors, ...colors];
+      
+      // Shuffle colors
+      for (let i = colorPairs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [colorPairs[i], colorPairs[j]] = [colorPairs[j], colorPairs[i]];
+      }
+      
+      colorPairs.forEach((color, index) => {
+        const square = document.createElement('div');
+        square.className = 'color-square';
+        square.style.backgroundColor = color;
+        square.dataset.color = color;
+        square.dataset.index = index;
+        square.onclick = () => isGameActive && checkMatch(square);
+        grid.appendChild(square);
+      });
+    }
+
+    function checkMatch(square) {
+      if (firstSelection === null) {
+        firstSelection = square;
+        square.classList.add('selected');
+      } else {
+        if (firstSelection.dataset.color === square.dataset.color && firstSelection.dataset.index !== square.dataset.index) {
+          firstSelection.classList.remove('selected');
+          firstSelection.classList.add('matched');
+          square.classList.add('matched');
+          matchedPairs++;
+          document.getElementById('colorProgress').style.width = `${(matchedPairs / totalPairs) * 100}%`;
+          document.getElementById('colorScore').textContent = `Matches: ${matchedPairs}/6`;
+          if (matchedPairs === totalPairs) {
+            isGameActive = false;
+            showSuccess();
+          }
+        } else {
+          isGameActive = false;
+          firstSelection.classList.remove('selected');
+          square.classList.add('selected');
+          setTimeout(() => {
+            firstSelection.classList.remove('selected');
+            square.classList.remove('selected');
+            firstSelection = null;
+            isGameActive = true;
+          }, 1000);
+        }
+        firstSelection = null;
+      }
+    }
+
+    // Tapping Pattern Game
+    let level = 1;
+    let userSequence = [];
+    let sequence = [];
+    let isShowingSequence = false;
+    let isUserTurn = false;
+
+    function startTappingGame() {
+      const points = document.querySelectorAll('.tap-point');
+      const progress = document.getElementById('tapProgress');
+      const score = document.getElementById('tapScore');
+      
+      level = 1;
+      userSequence = [];
+      isShowingSequence = false;
+      isUserTurn = false;
+      progress.style.width = '0%';
+      score.textContent = 'Level: 1';
+      
+      points.forEach(point => {
+        point.classList.remove('correct', 'wrong');
+      });
+      
+      generateSequence();
+      showSequence();
+    }
+
+    function generateSequence() {
+      sequence = [];
+      for (let i = 0; i < level; i++) {
+        sequence.push(Math.floor(Math.random() * 4));
+      }
+    }
+
+    function showSequence() {
+      isShowingSequence = true;
+      const points = document.querySelectorAll('.tap-point');
+      let i = 0;
+      const showInterval = setInterval(() => {
+        if (i < sequence.length) {
+          points[sequence[i]].classList.add('active');
+          setTimeout(() => {
+            points[sequence[i]].classList.remove('active');
+          }, 500);
+          i++;
+        } else {
+          clearInterval(showInterval);
+          isShowingSequence = false;
+          isUserTurn = true;
+        }
+      }, 1000);
+    }
+
+    function checkSequence(index) {
+      if (!isUserTurn || isShowingSequence) return;
+      
+      const points = document.querySelectorAll('.tap-point');
+      const progress = document.getElementById('tapProgress');
+      const score = document.getElementById('tapScore');
+      
+      points[index].classList.add('active');
+      setTimeout(() => {
+        points[index].classList.remove('active');
+      }, 200);
+      
+      userSequence.push(index);
+      
+      if (userSequence.length === sequence.length) {
+        isUserTurn = false;
+        if (JSON.stringify(userSequence) === JSON.stringify(sequence)) {
+          points.forEach(point => point.classList.add('correct'));
+          setTimeout(() => {
+            points.forEach(point => point.classList.remove('correct'));
+            level++;
+            progress.style.width = `${(level / 5) * 100}%`;
+            score.textContent = `Level: ${level}`;
+            if (level > 5) {
+              showSuccess();
+              return;
+            }
+            userSequence = [];
+            setTimeout(() => {
+              generateSequence();
+              showSequence();
+            }, 1000);
+          }, 500);
+        } else {
+          points.forEach(point => point.classList.add('wrong'));
+          setTimeout(() => {
+            points.forEach(point => point.classList.remove('wrong'));
+            userSequence = [];
+            setTimeout(() => {
+              generateSequence();
+              showSequence();
+            }, 1000);
+          }, 500);
+        }
+      }
+    }
+
+    // Add event listeners for tap points
+    document.addEventListener('DOMContentLoaded', () => {
+      const tapPoints = document.querySelectorAll('.tap-point');
+      tapPoints.forEach((point, index) => {
+        point.onclick = () => checkSequence(index);
+      });
+    });
+
+    // Memory Game
+    let flippedCards = [];
+    let matchedCards = 0;
+    const totalCards = 8;
+
+    function startMemoryGame() {
+      const grid = document.getElementById('memoryGrid');
+      const progress = document.getElementById('memoryProgress');
+      const score = document.getElementById('memoryScore');
+      
+      grid.innerHTML = '';
+      flippedCards = [];
+      matchedCards = 0;
+      progress.style.width = '0%';
+      score.textContent = 'Pairs: 0/8';
+      
+      const symbols = ['🌟', '🎈', '🎨', '🎭', '🎪', '🎯', '🎲', '🎮'];
+      const cards = [...symbols, ...symbols];
+      
+      // Shuffle cards
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      
+      cards.forEach((symbol, index) => {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        card.dataset.symbol = symbol;
+        card.dataset.index = index;
+        
+        const front = document.createElement('div');
+        front.className = 'front';
+        
+        const back = document.createElement('div');
+        back.className = 'back';
+        back.textContent = symbol;
+        
+        card.appendChild(front);
+        card.appendChild(back);
+        card.onclick = () => flipCard(card);
+        
+        grid.appendChild(card);
+      });
+    }
+
+    function flipCard(card) {
+      if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+        card.classList.add('flipped');
+        flippedCards.push(card);
+        
+        if (flippedCards.length === 2) {
+          const [card1, card2] = flippedCards;
+          if (card1.dataset.symbol === card2.dataset.symbol) {
+            matchedCards++;
+            document.getElementById('memoryProgress').style.width = `${(matchedCards / totalCards) * 100}%`;
+            document.getElementById('memoryScore').textContent = `Pairs: ${matchedCards}/8`;
+            flippedCards = [];
+            if (matchedCards === totalCards) {
+              showSuccess();
+            }
+          } else {
+            setTimeout(() => {
+              card1.classList.remove('flipped');
+              card2.classList.remove('flipped');
+              flippedCards = [];
+            }, 1000);
+          }
+        }
+      }
+    }
+
+    function showSuccess() {
+      const message = document.getElementById('successMessage');
+      message.style.display = 'block';
+      setTimeout(() => {
+        message.style.display = 'none';
+      }, 3000);
+    }
+
+    // Initialize games
+    startColorGame();
+    startTappingGame();
+    startMemoryGame();
+  </script>
+</body>
+</html> 

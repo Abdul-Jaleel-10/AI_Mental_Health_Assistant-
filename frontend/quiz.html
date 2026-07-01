@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wellness Quiz - Mental Health Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="team-logo">
+    <i class="fas fa-brain"></i>
+    <span class="team-logo-text">Mental Health Assistant</span>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>Wellness Quiz</h1>
+      <p>Take a quick assessment of your mental well-being</p>
+    </header>
+
+    <div class="quiz-container">
+      <div class="progress-container">
+        <div class="progress-bar" style="width: 10%;"></div>
+      </div>
+
+      <div id="quiz-section">
+        <div class="question-container">
+          <div class="question-number">Question 1/10</div>
+          <h2 class="question-text">How often do you feel well-rested after sleeping?</h2>
+          
+          <div class="options-container">
+            <div class="radio-option">
+              <input type="radio" id="never" name="sleep" value="1">
+              <label for="never">Never</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="rarely" name="sleep" value="2">
+              <label for="rarely">Rarely</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="sometimes" name="sleep" value="3">
+              <label for="sometimes">Sometimes</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="often" name="sleep" value="4">
+              <label for="often">Often</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="always" name="sleep" value="5">
+              <label for="always">Always</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="navigation-buttons">
+          <button class="nav-button prev-button" disabled>
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button class="nav-button next-button">
+            Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="results-section" style="display: none;">
+        <div class="results-header">
+          <h2>Your Wellness Assessment</h2>
+          <div class="score-circle">
+            <div class="score-value">0</div>
+            <div class="score-label">Wellness Score</div>
+          </div>
+        </div>
+
+        <div class="results-feedback">
+          <h3>Overall Assessment</h3>
+          <p id="feedback-text"></p>
+        </div>
+
+        <div class="recommendations">
+          <h3>Personalized Recommendations</h3>
+          <div class="recommendation-cards"></div>
+        </div>
+
+        <div class="results-actions">
+          <button class="nav-button" onclick="retakeQuiz()">
+            <i class="fas fa-redo"></i> Retake Quiz
+          </button>
+          <button class="nav-button" onclick="window.location.href='appointment.html'">
+            <i class="fas fa-calendar-alt"></i> Book Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-to-chat">
+      <i class="fas fa-arrow-left"></i> Back to Chat
+    </a>
+  </div>
+
+  <script>
+    const questions = [
+      "How often do you feel well-rested after sleeping?",
+      "How frequently do you feel overwhelmed by daily tasks?",
+      "How often do you engage in activities you enjoy?",
+      "How would you rate your ability to concentrate?",
+      "How often do you feel connected to others?",
+      "How frequently do you experience anxiety?",
+      "How well do you maintain a healthy work-life balance?",
+      "How often do you practice self-care?",
+      "How would you rate your stress management skills?",
+      "How satisfied are you with your overall mental well-being?"
+    ];
+
+    let currentQuestion = 0;
+    const answers = new Array(questions.length).fill(null);
+
+    function updateQuestion() {
+      const container = document.querySelector('.question-container');
+      const progressBar = document.querySelector('.progress-bar');
+      const questionNumber = document.querySelector('.question-number');
+      const questionText = document.querySelector('.question-text');
+      
+      progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+      questionNumber.textContent = `Question ${currentQuestion + 1}/${questions.length}`;
+      questionText.textContent = questions[currentQuestion];
+
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+      });
+
+      if (answers[currentQuestion] !== null) {
+        document.querySelector(`input[value="${answers[currentQuestion]}"]`).checked = true;
+      }
+
+      document.querySelector('.prev-button').disabled = currentQuestion === 0;
+      const nextButton = document.querySelector('.next-button');
+      nextButton.textContent = currentQuestion === questions.length - 1 ? 'Finish' : 'Next';
+    }
+
+    function getWellnessFeedback(score) {
+      const percentage = (score / (questions.length * 5)) * 100;
+      if (percentage >= 80) {
+        return "Excellent! Your responses indicate strong mental well-being. You're effectively managing your mental health and maintaining good self-care practices.";
+      } else if (percentage >= 60) {
+        return "Good job! While you're maintaining decent mental health practices, there's room for improvement in some areas. Consider incorporating more self-care activities.";
+      } else if (percentage >= 40) {
+        return "Your responses suggest moderate stress levels. Consider implementing more wellness practices and reaching out to supportive people in your life.";
+      } else {
+        return "Your responses indicate you might be going through a challenging time. We strongly recommend talking to a mental health professional who can provide proper support and guidance.";
+      }
+    }
+
+    function getRecommendations(score) {
+      const percentage = (score / (questions.length * 5)) * 100;
+      const recommendations = [];
+
+      if (percentage < 60) {
+        recommendations.push({
+          icon: "fas fa-user-md",
+          title: "Professional Support",
+          text: "Consider scheduling a consultation with a mental health professional for personalized guidance."
+        });
+      }
+
+      recommendations.push(
+        {
+          icon: "fas fa-bed",
+          title: "Sleep Hygiene",
+          text: "Maintain a consistent sleep schedule and create a relaxing bedtime routine."
+        },
+        {
+          icon: "fas fa-heart",
+          title: "Self-Care",
+          text: "Dedicate time each day for activities that bring you joy and relaxation."
+        },
+        {
+          icon: "fas fa-users",
+          title: "Social Connection",
+          text: "Stay connected with friends and family, and consider joining support groups."
+        },
+        {
+          icon: "fas fa-brain",
+          title: "Mental Stimulation",
+          text: "Engage in activities that challenge your mind and promote learning."
+        }
+      );
+
+      return recommendations;
+    }
+
+    function showResults() {
+      const score = answers.reduce((sum, value) => sum + parseInt(value), 0);
+      const maxScore = questions.length * 5;
+      const percentage = (score / maxScore) * 100;
+
+      document.getElementById('quiz-section').style.display = 'none';
+      document.getElementById('results-section').style.display = 'block';
+
+      document.querySelector('.score-value').textContent = Math.round(percentage);
+      
+      document.getElementById('feedback-text').textContent = getWellnessFeedback(score);
+
+      const recommendations = getRecommendations(score);
+      const recommendationsHtml = recommendations.map(rec => `
+        <div class="recommendation-card">
+          <i class="${rec.icon}"></i>
+          <h4>${rec.title}</h4>
+          <p>${rec.text}</p>
+        </div>
+      `).join('');
+      document.querySelector('.recommendation-cards').innerHTML = recommendationsHtml;
+    }
+
+    function retakeQuiz() {
+      currentQuestion = 0;
+      answers.fill(null);
+      document.getElementById('results-section').style.display = 'none';
+      document.getElementById('quiz-section').style.display = 'block';
+      updateQuestion();
+    }
+
+    document.querySelector('.prev-button').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        updateQuestion();
+      }
+    });
+
+    document.querySelector('.next-button').addEventListener('click', () => {
+      const selectedAnswer = document.querySelector('input[name="sleep"]:checked');
+      if (selectedAnswer) {
+        answers[currentQuestion] = selectedAnswer.value;
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          updateQuestion();
+        } else {
+          showResults();
+        }
+      } else {
+        alert('Please select an answer before proceeding.');
+      }
+    });
+
+    updateQuestion();
+  </script>
+</body>
+</html>

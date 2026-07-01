@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medicine Tracker - Mental Health Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #ff0000;
+      --secondary-color: #ff3333;
+      --accent-color: #ff6666;
+      --dark-bg: #000000;
+      --card-bg: #1a1a1a;
+      --text-color: #ffffff;
+      --border-color: #333333;
+      --hover-bg: rgba(255, 0, 0, 0.1);
+      --success-color: #00ff00;
+      --warning-color: #ff0000;
+    }
+
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-color);
+      font-family: 'Poppins', sans-serif;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 20%);
+    }
+
+    .medicine-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(26, 35, 126, 0.2);
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .medicine-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .medicine-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(26, 35, 126, 0.1), rgba(255, 215, 0, 0.1));
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .medicine-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    }
+
+    .medicine-header h1 {
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+
+    .condition-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .condition-option {
+      background: var(--dark-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 15px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .condition-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(26, 35, 126, 0.1), rgba(255, 215, 0, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .condition-option:hover::before {
+      opacity: 1;
+    }
+
+    .condition-option:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-color);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+    }
+
+    .condition-option.selected {
+      background: linear-gradient(135deg, rgba(26, 35, 126, 0.2), rgba(255, 215, 0, 0.2));
+      border-color: var(--accent-color);
+    }
+
+    .condition-icon {
+      font-size: 2rem;
+      color: var(--accent-color);
+      z-index: 1;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .condition-option span {
+      font-size: 1.2rem;
+      font-weight: 500;
+      z-index: 1;
+    }
+
+    .medicine-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .medicine-card {
+      background: var(--dark-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .medicine-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(26, 35, 126, 0.1), rgba(255, 215, 0, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .medicine-card:hover::before {
+      opacity: 1;
+    }
+
+    .medicine-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-color);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+    }
+
+    .medicine-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .medicine-name i {
+      font-size: 1.8rem;
+    }
+
+    .medicine-details {
+      margin: 1.5rem 0;
+    }
+
+    .medicine-details p {
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-color);
+    }
+
+    .medicine-details i {
+      color: var(--accent-color);
+      font-size: 1.2rem;
+    }
+
+    .warning {
+      background: rgba(255, 215, 0, 0.1);
+      border-left: 4px solid var(--accent-color);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 10px 10px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .warning i {
+      color: var(--accent-color);
+      font-size: 1.5rem;
+      margin-top: 0.2rem;
+    }
+
+    .warning-content {
+      flex: 1;
+    }
+
+    .warning strong {
+      color: var(--accent-color);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .schedule-form {
+      margin-top: 3rem;
+      padding: 2rem;
+      background: var(--dark-bg);
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .schedule-form::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .schedule-form h3 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.8rem;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      color: white;
+      padding: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+    }
+
+    .message {
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-top: 2rem;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid var(--success-color);
+      color: var(--success-color);
+    }
+
+    .error {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid var(--warning-color);
+      color: var(--warning-color);
+    }
+
+    .success-details {
+      text-align: left;
+    }
+
+    .success-details h3 {
+      color: var(--success-color);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .appointment-details {
+      background: rgba(76, 175, 80, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      border-left: 3px solid var(--success-color);
+    }
+
+    .appointment-details p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .note {
+      font-style: italic;
+      opacity: 0.8;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="team-logo">
+    <i class="fas fa-brain"></i>
+    <span class="team-logo-text">Mental Health Assistant</span>
+  </div>
+
+  <div class="medicine-container">
+    <div class="medicine-header">
+      <h1>Medicine Tracker</h1>
+      <p>Select your condition to view recommended medications and set reminders</p>
+    </div>
+
+    <div class="condition-options">
+      <div class="condition-option" data-value="anxiety">
+        <i class="fas fa-heart condition-icon"></i>
+        <span>Anxiety & Panic</span>
+      </div>
+      <div class="condition-option" data-value="depression">
+        <i class="fas fa-brain condition-icon"></i>
+        <span>Depression & Mood</span>
+      </div>
+      <div class="condition-option" data-value="stress">
+        <i class="fas fa-cloud condition-icon"></i>
+        <span>Stress Management</span>
+      </div>
+      <div class="condition-option" data-value="sleep">
+        <i class="fas fa-moon condition-icon"></i>
+        <span>Sleep Disorders</span>
+      </div>
+    </div>
+
+    <div class="medicine-cards" id="medicineCards">
+      <!-- Medicine cards will be dynamically loaded here -->
+    </div>
+
+    <div class="schedule-form" id="scheduleForm" style="display: none;">
+      <h3>Set Medicine Reminder</h3>
+      <form id="reminderForm">
+        <div class="form-group">
+          <label for="medicineName">Medicine Name</label>
+          <input type="text" id="medicineName" readonly>
+        </div>
+        <div class="form-group">
+          <label for="reminderTime">Reminder Time</label>
+          <input type="time" id="reminderTime" required>
+        </div>
+        <div class="form-group">
+          <label for="reminderDays">Days</label>
+          <input type="text" id="reminderDays" placeholder="e.g., Monday, Wednesday, Friday" required>
+        </div>
+        <button type="submit" class="submit-btn">Set Reminder</button>
+      </form>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const medicines = {
+      anxiety: [
+        {
+          name: "Sertraline (Zoloft)",
+          dosage: "50-200mg daily",
+          description: "SSRI antidepressant used for anxiety disorders",
+          warning: "Consult your doctor before starting. May cause initial anxiety.",
+          sideEffects: "Nausea, insomnia, dizziness",
+          duration: "4-6 weeks for full effect"
+        },
+        {
+          name: "Buspirone (Buspar)",
+          dosage: "15-60mg daily in divided doses",
+          description: "Non-benzodiazepine anxiolytic",
+          warning: "Not for immediate relief. Takes 2-4 weeks to work.",
+          sideEffects: "Dizziness, headache, nausea",
+          duration: "Long-term use possible"
+        }
+      ],
+      depression: [
+        {
+          name: "Fluoxetine (Prozac)",
+          dosage: "20-80mg daily",
+          description: "SSRI antidepressant",
+          warning: "May increase suicidal thoughts in young adults.",
+          sideEffects: "Insomnia, nausea, headache",
+          duration: "6-8 weeks for full effect"
+        },
+        {
+          name: "Escitalopram (Lexapro)",
+          dosage: "10-20mg daily",
+          description: "SSRI antidepressant",
+          warning: "Do not stop suddenly. Taper under doctor's supervision.",
+          sideEffects: "Fatigue, dry mouth, sweating",
+          duration: "Long-term treatment"
+        }
+      ],
+      stress: [
+        {
+          name: "Propranolol (Inderal)",
+          dosage: "10-40mg as needed",
+          description: "Beta-blocker for physical symptoms of stress",
+          warning: "Not for long-term use. Monitor blood pressure.",
+          sideEffects: "Fatigue, dizziness, cold hands",
+          duration: "Short-term use"
+        },
+        {
+          name: "Hydroxyzine (Atarax)",
+          dosage: "25-100mg daily",
+          description: "Antihistamine with anxiolytic properties",
+          warning: "May cause drowsiness. Avoid alcohol.",
+          sideEffects: "Drowsiness, dry mouth",
+          duration: "Short-term use"
+        }
+      ],
+      sleep: [
+        {
+          name: "Zolpidem (Ambien)",
+          dosage: "5-10mg at bedtime",
+          description: "Non-benzodiazepine sleep aid",
+          warning: "Use only for short-term. Risk of dependence.",
+          sideEffects: "Drowsiness, dizziness, headache",
+          duration: "Short-term use (2-4 weeks)"
+        },
+        {
+          name: "Trazodone (Desyrel)",
+          dosage: "25-100mg at bedtime",
+          description: "Antidepressant with sedative properties",
+          warning: "May cause next-day drowsiness.",
+          sideEffects: "Drowsiness, dry mouth, dizziness",
+          duration: "As prescribed by doctor"
+        }
+      ]
+    };
+
+    // Function to create medicine cards
+    function createMedicineCard(medicine) {
+      return `
+        <div class="medicine-card">
+          <div class="medicine-name">
+            <i class="fas fa-pills"></i>
+            ${medicine.name}
+          </div>
+          <div class="medicine-details">
+            <p><i class="fas fa-capsules"></i> Dosage: ${medicine.dosage}</p>
+            <p><i class="fas fa-info-circle"></i> ${medicine.description}</p>
+            <p><i class="fas fa-clock"></i> Duration: ${medicine.duration}</p>
+            <p><i class="fas fa-exclamation-triangle"></i> Side Effects: ${medicine.sideEffects}</p>
+          </div>
+          <div class="warning">
+            <i class="fas fa-exclamation-circle"></i>
+            <div class="warning-content">
+              <strong>Important Warning</strong>
+              ${medicine.warning}
+            </div>
+          </div>
+          <button class="submit-btn" onclick="showScheduleForm('${medicine.name}')">Set Reminder</button>
+        </div>
+      `;
+    }
+
+    // Function to show schedule form
+    function showScheduleForm(medicineName) {
+      document.getElementById('scheduleForm').style.display = 'block';
+      document.getElementById('medicineName').value = medicineName;
+      document.getElementById('scheduleForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Event listeners for condition options
+    document.querySelectorAll('.condition-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.condition-option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        
+        const condition = option.dataset.value;
+        const medicineCards = document.getElementById('medicineCards');
+        medicineCards.innerHTML = '';
+        
+        if (medicines[condition]) {
+          medicines[condition].forEach(medicine => {
+            medicineCards.innerHTML += createMedicineCard(medicine);
+          });
+        }
+      });
+    });
+
+    // Form submission
+    document.getElementById('reminderForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const medicineName = document.getElementById('medicineName').value;
+      const reminderTime = document.getElementById('reminderTime').value;
+      const reminderDays = document.getElementById('reminderDays').value;
+      
+      const successMessage = `
+        <div class="success-details">
+          <h3>Reminder Set Successfully!</h3>
+          <div class="appointment-details">
+            <p><i class="fas fa-check-circle"></i> Medicine: ${medicineName}</p>
+            <p><i class="fas fa-clock"></i> Time: ${reminderTime}</p>
+            <p><i class="fas fa-calendar"></i> Days: ${reminderDays}</p>
+          </div>
+          <p class="note">You will receive reminders at the specified time. Please consult your doctor before taking any medication.</p>
+        </div>
+      `;
+      
+      showMessage(successMessage, 'success');
+      
+      // Reset form
+      document.getElementById('reminderForm').reset();
+      document.getElementById('scheduleForm').style.display = 'none';
+    });
+
+    // Function to show messages
+    function showMessage(content, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = content;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html> 

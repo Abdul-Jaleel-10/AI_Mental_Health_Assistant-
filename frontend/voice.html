@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Assistant - Mental Health Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1a237e;
+      --secondary-color: #283593;
+      --accent-color: #ffd700;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --text-color: #ffffff;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: var(--text-color);
+    }
+
+    .voice-assistant {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .assistant-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .assistant-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    .assistant-header p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    .voice-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mic-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .mic-button i {
+      font-size: 2rem;
+      color: var(--accent-color);
+    }
+
+    .mic-button.listening {
+      background: #f44336;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .status {
+      font-size: 1.1rem;
+      text-align: center;
+      min-height: 24px;
+    }
+
+    .conversation {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      min-height: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+
+    .user-message {
+      background: rgba(255, 255, 255, 0.1);
+      margin-left: auto;
+    }
+
+    .assistant-message {
+      background: rgba(255, 215, 0, 0.1);
+      margin-right: auto;
+    }
+
+    .faq-section {
+      margin-top: 2rem;
+    }
+
+    .faq-section h2 {
+      color: var(--accent-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .faq-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .faq-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .faq-card h3 {
+      color: var(--accent-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .faq-card p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .suggestion {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .suggestion:hover {
+      background: rgba(255, 215, 0, 0.2);
+    }
+
+    .commands {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+    }
+
+    .commands h3 {
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+    }
+
+    .command-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .command-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .command-item p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .voice-assistant {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+
+      .assistant-header h1 {
+        font-size: 2rem;
+      }
+
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="voice-assistant">
+      <div class="assistant-header">
+        <h1>Voice Assistant</h1>
+        <p>Talk to me about your feelings and concerns</p>
+      </div>
+
+      <div class="voice-controls">
+        <button class="mic-button" id="micButton">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <div class="status" id="status">Click the microphone to start</div>
+      </div>
+
+      <div class="conversation" id="conversation">
+        <div class="message assistant-message">
+          Hello! I'm here to help you with your mental health concerns. You can ask me questions or share your feelings.
+        </div>
+      </div>
+
+      <div class="suggestions">
+        <div class="suggestion" onclick="askQuestion('How can I manage anxiety?')">How can I manage anxiety?</div>
+        <div class="suggestion" onclick="askQuestion('What are signs of depression?')">What are signs of depression?</div>
+        <div class="suggestion" onclick="askQuestion('How to improve sleep?')">How to improve sleep?</div>
+        <div class="suggestion" onclick="askQuestion('Tips for stress management')">Tips for stress management</div>
+      </div>
+
+      <div class="commands">
+        <h3>Available Commands</h3>
+        <div class="command-list">
+          <div class="command-item">
+            <strong>Mental Health</strong>
+            <p>Ask about symptoms, conditions, or coping strategies</p>
+          </div>
+          <div class="command-item">
+            <strong>Emergency</strong>
+            <p>Get immediate help or crisis resources</p>
+          </div>
+          <div class="command-item">
+            <strong>Self-Care</strong>
+            <p>Learn about self-care practices and routines</p>
+          </div>
+          <div class="command-item">
+            <strong>Resources</strong>
+            <p>Find mental health resources and support</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+          <div class="faq-card" onclick="askQuestion('What are common symptoms of anxiety?')">
+            <h3>Anxiety Symptoms</h3>
+            <p>Learn about common signs and symptoms of anxiety disorders</p>
+          </div>
+          <div class="faq-card" onclick="askQuestion('How to practice mindfulness?')">
+            <h3>Mindfulness</h3>
+            <p>Discover mindfulness techniques for stress reduction</p>
+          </div>
+          <div class="faq-card" onclick="askQuestion('What is cognitive behavioral therapy?')">
+            <h3>CBT Basics</h3>
+            <p>Understand the principles of cognitive behavioral therapy</p>
+          </div>
+          <div class="faq-card" onclick="askQuestion('How to build healthy habits?')">
+            <h3>Healthy Habits</h3>
+            <p>Tips for developing and maintaining healthy routines</p>
+          </div>
+          <div class="faq-card" onclick="askQuestion('What are coping strategies for stress?')">
+            <h3>Stress Management</h3>
+            <p>Effective ways to manage and reduce stress</p>
+          </div>
+          <div class="faq-card" onclick="askQuestion('How to improve sleep quality?')">
+            <h3>Sleep Hygiene</h3>
+            <p>Learn about good sleep practices and habits</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const micButton = document.getElementById('micButton');
+    const status = document.getElementById('status');
+    const conversation = document.getElementById('conversation');
+    let isListening = false;
+
+    // Enhanced Mental Health Knowledge Base
+    const knowledgeBase = {
+      'anxiety': {
+        symptoms: 'Common symptoms of anxiety include excessive worry, restlessness, difficulty concentrating, muscle tension, and sleep problems. Physical symptoms may include rapid heartbeat, sweating, and shortness of breath.',
+        management: 'To manage anxiety, try deep breathing exercises, regular physical activity, maintaining a healthy sleep schedule, practicing mindfulness, and limiting caffeine and alcohol. Consider seeking professional help if symptoms persist.',
+        types: 'There are several types of anxiety disorders, including generalized anxiety disorder, panic disorder, social anxiety disorder, and specific phobias. Each has unique characteristics and treatment approaches.',
+        help: 'If you\'re experiencing anxiety, try these immediate steps: 1) Practice deep breathing, 2) Focus on the present moment, 3) Use grounding techniques, 4) Reach out to someone you trust, 5) Consider professional help if needed.'
+      },
+      'depression': {
+        signs: 'Signs of depression include persistent sadness, loss of interest in activities, changes in sleep and appetite, fatigue, feelings of worthlessness, and difficulty concentrating. If you experience these symptoms for more than two weeks, consider seeking help.',
+        treatment: 'Depression can be treated through therapy, medication, lifestyle changes, or a combination of these. Cognitive behavioral therapy and interpersonal therapy are common approaches.',
+        support: 'Building a support network, maintaining regular routines, engaging in physical activity, and practicing self-care can help manage depression symptoms.',
+        help: 'If you\'re feeling depressed, try these steps: 1) Reach out to someone you trust, 2) Maintain a daily routine, 3) Get regular exercise, 4) Practice self-care, 5) Consider professional help.'
+      },
+      'stress': {
+        management: 'Effective stress management includes regular exercise, proper sleep, healthy eating, time management, relaxation techniques, and setting boundaries. Mindfulness and meditation can also be helpful.',
+        symptoms: 'Stress symptoms can be physical (headaches, muscle tension), emotional (anxiety, irritability), or behavioral (changes in sleep or eating patterns).',
+        reduction: 'To reduce stress, try deep breathing exercises, progressive muscle relaxation, regular physical activity, and maintaining a balanced schedule.',
+        help: 'To manage stress, try these techniques: 1) Take deep breaths, 2) Go for a walk, 3) Practice mindfulness, 4) Listen to calming music, 5) Talk to someone about your feelings.'
+      },
+      'sleep': {
+        improvement: 'To improve sleep, maintain a regular sleep schedule, create a comfortable sleep environment, limit screen time before bed, avoid caffeine and large meals before bedtime, and establish a relaxing bedtime routine.',
+        hygiene: 'Good sleep hygiene includes keeping a consistent sleep schedule, creating a dark and quiet sleep environment, avoiding naps during the day, and limiting exposure to screens before bedtime.',
+        problems: 'Common sleep problems include insomnia, sleep apnea, and restless leg syndrome. If sleep problems persist, consult a healthcare professional.',
+        help: 'For better sleep, try these tips: 1) Stick to a regular sleep schedule, 2) Create a bedtime routine, 3) Make your bedroom comfortable, 4) Avoid screens before bed, 5) Limit caffeine and alcohol.'
+      },
+      'mindfulness': {
+        practice: 'Mindfulness can be practiced through meditation, deep breathing, body scans, and mindful walking. Start with short sessions and gradually increase the duration.',
+        benefits: 'Mindfulness can reduce stress, improve focus, enhance emotional regulation, and promote overall well-being.',
+        techniques: 'Common mindfulness techniques include focused breathing, body scan meditation, mindful eating, and walking meditation.',
+        help: 'To practice mindfulness: 1) Focus on your breath, 2) Notice your surroundings, 3) Pay attention to your senses, 4) Accept your thoughts without judgment, 5) Practice regularly.'
+      },
+      'self-care': {
+        importance: 'Self-care is essential for maintaining mental and physical health. It includes activities that promote well-being and reduce stress.',
+        practices: 'Self-care practices include regular exercise, healthy eating, adequate sleep, social connections, hobbies, and relaxation techniques.',
+        routine: 'Create a self-care routine that includes physical activity, relaxation, social interaction, and activities you enjoy.',
+        help: 'For self-care, try these activities: 1) Take a relaxing bath, 2) Read a book, 3) Go for a walk, 4) Practice meditation, 5) Spend time with loved ones.'
+      },
+      'emergency': {
+        help: 'If you\'re in crisis, please reach out to a mental health professional or emergency services immediately. You can also contact crisis hotlines for support.',
+        resources: 'Emergency resources include crisis hotlines, emergency services, and mental health professionals. Don\'t hesitate to seek help when needed.',
+        support: 'Remember that help is available. You don\'t have to go through difficult times alone. Reach out to trusted individuals or professional services.'
+      }
+    };
+
+    // Initialize speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    // Initialize speech synthesis
+    const speechSynthesis = window.speechSynthesis;
+    let isSpeaking = false;
+
+    recognition.onstart = () => {
+      isListening = true;
+      micButton.classList.add('listening');
+      status.textContent = 'Listening...';
+      // Stop any ongoing speech when starting to listen
+      if (isSpeaking) {
+        speechSynthesis.cancel();
+        isSpeaking = false;
+      }
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      micButton.classList.remove('listening');
+      status.textContent = 'Click the microphone to start';
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.toLowerCase();
+      addMessage(transcript, 'user');
+      processQuery(transcript);
+    };
+
+    // Function to speak text
+    function speakText(text) {
+      if (isSpeaking) {
+        speechSynthesis.cancel();
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Configure voice settings
+      utterance.rate = 0.9; // Slightly slower than normal
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Get available voices and select a natural-sounding one
+      const voices = speechSynthesis.getVoices();
+      const naturalVoice = voices.find(voice => 
+        voice.name.includes('Google') || 
+        voice.name.includes('Microsoft') ||
+        voice.name.includes('Natural')
+      );
+      
+      if (naturalVoice) {
+        utterance.voice = naturalVoice;
+      }
+      
+      // Event handlers for speech synthesis
+      utterance.onstart = () => {
+        isSpeaking = true;
+        status.textContent = 'Speaking...';
+      };
+      
+      utterance.onend = () => {
+        isSpeaking = false;
+        status.textContent = 'Click the microphone to start';
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        isSpeaking = false;
+        status.textContent = 'Error speaking. Click the microphone to try again.';
+      };
+      
+      speechSynthesis.speak(utterance);
+    }
+
+    micButton.addEventListener('click', () => {
+      if (!isListening) {
+        recognition.start();
+      } else {
+        recognition.stop();
+      }
+    });
+
+    function addMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}-message`;
+      messageDiv.textContent = text;
+      conversation.appendChild(messageDiv);
+      conversation.scrollTop = conversation.scrollHeight;
+    }
+
+    function askQuestion(question) {
+      addMessage(question, 'user');
+      processQuery(question.toLowerCase());
+    }
+
+    function processQuery(query) {
+      let response = "I'm here to help you with your mental health concerns. Could you please tell me more about what you're experiencing?";
+      
+      // Convert query to lowercase and remove extra spaces
+      query = query.toLowerCase().trim();
+      
+      // Check for emergency keywords first
+      if (query.includes('emergency') || query.includes('crisis') || query.includes('suicide') || 
+          query.includes('help me') || query.includes('need help')) {
+        response = knowledgeBase.emergency.help;
+        addMessage(response, 'assistant');
+        speakText(response);
+        return;
+      }
+
+      // Check for general mental health keywords
+      const topics = Object.keys(knowledgeBase);
+      let matchedTopic = null;
+      let matchedSubtopic = null;
+
+      // First pass: look for exact topic matches
+      for (const topic of topics) {
+        if (query.includes(topic)) {
+          matchedTopic = topic;
+          break;
+        }
+      }
+
+      // Second pass: look for subtopic matches
+      if (matchedTopic) {
+        const subtopics = Object.keys(knowledgeBase[matchedTopic]);
+        for (const subtopic of subtopics) {
+          if (query.includes(subtopic)) {
+            matchedSubtopic = subtopic;
+            break;
+          }
+        }
+      }
+
+      // Generate response based on matches
+      if (matchedTopic && matchedSubtopic) {
+        response = knowledgeBase[matchedTopic][matchedSubtopic];
+      } else if (matchedTopic) {
+        // If only topic is matched, provide general information
+        response = `Here's some information about ${matchedTopic}: ${Object.values(knowledgeBase[matchedTopic])[0]}`;
+      } else {
+        // If no matches, try to find related keywords
+        const relatedKeywords = {
+          'worry': 'anxiety',
+          'nervous': 'anxiety',
+          'sad': 'depression',
+          'down': 'depression',
+          'tired': 'sleep',
+          'insomnia': 'sleep',
+          'meditate': 'mindfulness',
+          'relax': 'stress',
+          'overwhelm': 'stress',
+          'self': 'self-care',
+          'routine': 'self-care'
+        };
+
+        for (const [keyword, topic] of Object.entries(relatedKeywords)) {
+          if (query.includes(keyword)) {
+            response = `It sounds like you might be interested in ${topic}. Here's some information: ${Object.values(knowledgeBase[topic])[0]}`;
+            break;
+          }
+        }
+      }
+
+      // Add a small delay to simulate processing
+      setTimeout(() => {
+        addMessage(response, 'assistant');
+        speakText(response);
+      }, 500);
+    }
+
+    // Load voices when the page loads
+    window.addEventListener('load', () => {
+      // Some browsers need this to populate the voices list
+      if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.addEventListener('voiceschanged', () => {
+          // Voices are now loaded
+        });
+      }
+    });
+  </script>
+</body>
+</html>
